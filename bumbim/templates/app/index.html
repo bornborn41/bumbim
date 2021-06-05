@@ -1,0 +1,61 @@
+
+{% load static %}
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Live Diary - Post</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+          {{ form.media }}
+    </head>
+    <body>
+    <center>
+      <div class="center">
+         <form enctype="multipart/form-data" method="POST">
+                 {% csrf_token %}
+            {% comment %} {{form|crispy}} {% endcomment %}
+            {{form.title|as_crispy_field}}
+            {{form.content|as_crispy_field }}
+            {{form.image|as_crispy_field}}
+            <br>
+            <div class="modal-footer">
+        
+        <button  type="submit"  class="btn btn-danger btn-lg btn-block rounded-pill" >Create</button>
+      </div>
+        </form> 
+        </div>
+</center>
+
+        <br>
+  {% comment %} <img  src="https://upload.wikimedia.org/wikipedia/commons/4/40/S.D.F._interviewed_with_VERY_TV.jpg" alt=""> {% endcomment %}
+        <div class="center">
+        {%for posts in post%}
+        
+            <div>
+            
+            <h1>หัวเรื่อง: {{posts.title|safe}}</h1>
+            </div>
+            {%if posts.image %}
+            <img  src="{{posts.image.url}}" alt="">
+            {%endif%}
+            <div>
+            <p>เนื้อเรื่อง: {{posts.content|safe|truncatewords:"30"|linebreaks }}</p>
+            </div>
+           
+              <br> 
+               <a href="/detail/{{posts.id}}"><button  class="btn btn-danger btn-lg btn-block rounded-pill" >read more ...</button></a><br> 
+             <br> 
+             <hr>
+        {%endfor%}
+       
+        </div>
+
+        
+    
+        <script src="" async defer></script>
+    </body>
+</html>

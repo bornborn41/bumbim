@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==2.2.7"
+pillow = "*"
+django-crispy-forms = "*"
+django-richtextfield = "*"
+
+[dev-packages]
+
+[requires]
+
+[scripts]
+s ="python manage.py runserver"
+rmdb = "bash -c 'rm -rf db.sqlite3 app/migrations/000*  blog/migrations/000* chat/migrations/000*'"
+mkm = "bash -c 'python manage.py makemigrations; python manage.py migrate'"
+loaddb = "bash -c 'python manage.py loaddb; python manage.py loadpoint;python manage.py createsuperuser;python manage.py loadmember;python manage.py runserver'"
+loadpoint = "python manage.py loadpoint"
+loadmember = "python manage.py loadmember"
+m = "python manage.py migrate"
+mk = "python manage.py makemigrations "
+super = "python manage.py createsuperuser"
+python_version = "3.9"

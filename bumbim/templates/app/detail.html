@@ -1,0 +1,42 @@
+
+{% load static %}
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Live Diary - Post</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+   
+
+        <br>
+  {% comment %} <img  src="https://upload.wikimedia.org/wikipedia/commons/4/40/S.D.F._interviewed_with_VERY_TV.jpg" alt=""> {% endcomment %}
+        <div class="center">
+       
+            <div>
+            <h1>หัวเรื่อง: {{post.title|safe}}</h1>
+             <a href="/edit/{{post.id}}"><button  class="btn btn-danger btn-lg btn-block rounded-pill" >Edit</button></a>
+             <a href="/delete/{{post.id}}"><button  class="btn btn-danger btn-lg btn-block rounded-pill" >Delete</button></a>
+            </div>
+            {%if post.image %}
+            <img  src="{{post.image.url}}" alt="">
+            {%endif%}
+            <div>
+            <p>เนื้อเรื่อง: {{post.content|safe}}</p>
+            </div>
+            <br> <br> <br>
+             <hr>
+       
+       
+        </div>
+
+        
+    
+        <script src="" async defer></script>
+    </body>
+</html>
