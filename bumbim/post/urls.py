@@ -28,6 +28,8 @@ urlpatterns = [
     path('edit/<int:pk>/',views.EditView.as_view(), name='edit'),
     path('delete/<int:pk>/',views.DeleteView.as_view(), name='delete'),
     path('detail/<int:pk>/',views.DetailView.as_view(), name='detail'),
+    path('create/', views.CreateView.as_view(), name='create'),
+    path('total/', views.TotalView.as_view(), name='total'),
     # auth
     path('logout/', views.logout_views, name='logout'),
     path('login/', views.LoginView.as_view(), name='login'),

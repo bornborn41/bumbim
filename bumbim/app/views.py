@@ -9,6 +9,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+import requests
 # Create your views here.
 
 def logout_views(req):
@@ -27,8 +28,7 @@ class RegisterView(View):
         return render(request, self.template_name, self.context)
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('home')
+       
         self.form = self.form(initial=self.initial)
         print(self.form)
         self.context = {'form': self.form}
@@ -48,7 +48,7 @@ class RegisterView(View):
                 request, f'Your account:{self.username} has been created! Your ar now able to login.')
             return redirect('login')
         else:
-            self.form = self.form(initial=self.initial)
+            # self.form = self.form(initial=self.initial)
             print(self.form)
         self.context = {'form': self.form}
         return self.render(request)
@@ -63,8 +63,7 @@ class LoginView(View):
         return render(request, self.template_name, self.context)
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('home')
+       
         self.form = self.form(initial=self.initial)
         self.context = {'form': self.form}
         return self.render(request)
@@ -144,8 +143,10 @@ class EditProfileView(LoginRequiredMixin,View):
         self.context = {'form':self.form}
         return self.render(request,username)
 
+
 class HomeView(LoginRequiredMixin,View):
     models = Post
+    author_models = Author
     form = PostForm
     initial = {'key': 'value'}
     template_name = 'app/index.html'
@@ -160,24 +161,13 @@ class HomeView(LoginRequiredMixin,View):
             return redirect('login')
         self.form = self.form(initial=self.initial)
         self.post = self.models.objects.filter(author=request.user)
-        self.context = {'form': self.form,'post': self.post}
+        self.author = self.author_models.objects.filter(pk=request.user.pk).first()
+        print(self.author)
+        self.context = {'form': self.form,'post': self.post,'author': self.author}
         
         return self.render(request)
 
-    def post(self, request, *args, **kwargs):
-        self.form = self.form(request.POST, request.FILES)
-        if self.form.is_valid():
-            
-            self.form.instance.author = self.request.user
-            self.form.save()
-            messages.success(
-                request, ' created success!')
-            return redirect(self.success_url)
-           
-        else:
-            self.form = self.form(instance=self.request.user)
-        self.context = {'form':self.form}
-        return self.render(request)
+  
         
 
 class EditView(LoginRequiredMixin,View):
@@ -219,7 +209,7 @@ class EditView(LoginRequiredMixin,View):
 
 class DeleteView(LoginRequiredMixin,View):
     models = Post
-    success_url = "home"
+    success_url = "total"
     
 
     def redirect(self,request,pk, *args, **kwargs):
@@ -249,5 +239,112 @@ class DetailView(LoginRequiredMixin,View):
         self.context = {'post':self.post}
         return self.render(request,pk)
 
-    
+class CreateView(LoginRequiredMixin,View):
+    models = Post
+    form = PostForm
+    initial = {'key': 'value'}
+    template_name = 'app/create.html'
+    success_url ="total"
+
+
+    def render(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def get(self, request, *args, **kwargs):
+      
+        self.form = self.form(initial=self.initial)
+        self.post = self.models.objects.filter(author=request.user)
+        self.context = {'form': self.form,'post': self.post}
         
+        return self.render(request)
+
+    def post(self, request, *args, **kwargs):
+        self.form = self.form(request.POST, request.FILES)
+        sentiment = []
+        
+        context = {}
+        if self.form.is_valid():
+            # print (self.form.instance)
+            moji_list =[['🙂','😄','😁','😆','😀','😊','😃'],
+            ['😢','😥','😰','😓','🙁','😟','😞','😔','😣','😫','😩'],
+            ['😡','😠','😤','😖'],
+            ['🙄','😒','😑','😕'],
+            ['😱'],
+            ['😨','😧','😦'],
+            ['😮','😲','😯'],
+            ['😴','😪'],
+            ['😋','😜','😝','😛'],
+            ['😍','💕','😘','😚','😙','😗'],
+            ['😌'],
+            ['😐'],
+            ['😷'],
+            ['😳'],
+            ['😵'],
+            ['💔'],
+            ['😎','😈'],
+            ['🙃','😏','😂','😭'],
+            ['😬','😅','😶'],
+            ['😉'],
+            ['💖','💙','💚','💗','💓','💜','💘','💛'],
+            ['😇']]
+            url = "https://api.aiforthai.in.th/emoji"
+            text = self.form.instance
+            params = {'text':text}
+        
+            headers = {
+                'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                }
+            response = requests.get(url, params=params, headers=headers,)
+    
+            keys=response.json().keys()
+            self.emoji = [moji_list[int(k)][0] for k in keys]
+        
+ 
+            url = "https://api.aiforthai.in.th/ssense"
+            
+            text = self.form.instance.content
+             
+            
+            print(f'___text____{text}___________')
+            data = {'text':text}
+            
+            headers = {
+                'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                }
+    
+            self.response = requests.post(url, data=data, headers=headers)
+            self.polarity = (self.response.json()['sentiment']['polarity'])
+            self.score = (self.response.json()['sentiment']['score'])
+            print(self.polarity,self.score,self.emoji )
+            self.form.instance.sentiment =  self.polarity
+            self.form.instance.score  =self.score
+            self.form.instance.emoji =self.emoji
+            self.form.instance.sentiment =  self.polarity
+            self.form.instance.author = self.request.user
+            self.form.save()
+            # print(self.form)
+            messages.success(request, 'เพิ่มสำเร็จ')
+            return redirect(self.success_url)
+
+       
+           
+        else:
+            self.form = self.form(instance=self.request.user)
+        self.context = {'form':self.form}
+        return self.render(request)
+    
+class TotalView(LoginRequiredMixin,View):
+    models = Post
+    template_name = 'app/total.html'
+    success_url ="total"
+
+
+    def render(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def get(self, request, *args, **kwargs):
+  
+        self.post = self.models.objects.filter(author=request.user)
+        self.context = { 'post': self.post}
+        
+        return self.render(request)

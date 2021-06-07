@@ -19,7 +19,7 @@ class PostForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Author
-        fields = ['username','email','phone_number','image','description']
+        fields = ['username','email','image']
 
         widgets = {
             

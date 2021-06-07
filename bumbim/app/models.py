@@ -9,8 +9,7 @@ from djrichtextfield.models import RichTextField
 class Author(AbstractUser):
     description = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=50, null=True, blank=True)
-    image = models.ImageField(upload_to='profile_pics') 
-
+    image = models.ImageField(upload_to='profile_pics')
 
     def __str__(self):
         return f'ID:{self.id} ({self.username})'
@@ -26,6 +25,9 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     # content = models.TextField(blank=True,null=True)
     content = RichTextField()
+    sentiment = models.CharField(max_length=300)
+    score = models.FloatField(null=True,blank=True)
+    emoji = models.TextField(blank=True,null=True)
     date_posted = models.DateTimeField(default=timezone.now)
 
 
@@ -33,7 +35,8 @@ class Post(models.Model):
         ordering = ('-date_posted', )
 
     def __str__(self):
-        return f' {self.title} ของ {self.author}' 
+        # return f' {self.title} ของ {self.author}' 
+        return self.content
 
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'pk': self.pk})
