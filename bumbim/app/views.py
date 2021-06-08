@@ -166,8 +166,6 @@ class HomeView(LoginRequiredMixin,View):
         self.context = {'form': self.form,'post': self.post,'author': self.author}
         
         return self.render(request)
-
-  
         
 
 class EditView(LoginRequiredMixin,View):
@@ -242,6 +240,7 @@ class DetailView(LoginRequiredMixin,View):
 class CreateView(LoginRequiredMixin,View):
     models = Post
     form = PostForm
+    author_models = Author
     initial = {'key': 'value'}
     template_name = 'app/create.html'
     success_url ="total"
@@ -254,7 +253,8 @@ class CreateView(LoginRequiredMixin,View):
       
         self.form = self.form(initial=self.initial)
         self.post = self.models.objects.filter(author=request.user)
-        self.context = {'form': self.form,'post': self.post}
+        self.author = self.author_models.objects.filter(pk=request.user.pk).first()
+        self.context = {'form': self.form,'post': self.post,'author': self.author}
         
         return self.render(request)
 
@@ -298,11 +298,14 @@ class CreateView(LoginRequiredMixin,View):
     
             keys=response.json().keys()
             self.emoji = [moji_list[int(k)][0] for k in keys]
+            emoji =  ""
+            for i in self.emoji:
+                emoji += i
         
  
             url = "https://api.aiforthai.in.th/ssense"
             
-            text = self.form.instance.content
+            text = self.form.instance
              
             
             print(f'___text____{text}___________')
@@ -318,7 +321,7 @@ class CreateView(LoginRequiredMixin,View):
             print(self.polarity,self.score,self.emoji )
             self.form.instance.sentiment =  self.polarity
             self.form.instance.score  =self.score
-            self.form.instance.emoji =self.emoji
+            self.form.instance.emoji =emoji
             self.form.instance.sentiment =  self.polarity
             self.form.instance.author = self.request.user
             self.form.save()
@@ -335,6 +338,7 @@ class CreateView(LoginRequiredMixin,View):
     
 class TotalView(LoginRequiredMixin,View):
     models = Post
+    author_models = Author
     template_name = 'app/total.html'
     success_url ="total"
 
@@ -345,6 +349,7 @@ class TotalView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
   
         self.post = self.models.objects.filter(author=request.user)
-        self.context = { 'post': self.post}
+        self.author = self.author_models.objects.filter(pk=request.user.pk).first()
+        self.context = { 'post': self.post,'author': self.author}
         
         return self.render(request)
