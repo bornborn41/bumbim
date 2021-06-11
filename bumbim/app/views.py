@@ -191,19 +191,84 @@ class EditView(LoginRequiredMixin,View):
         self.post =self.models.objects.get(pk=pk)
         if self.request.user == self.post.author:
             self.form = PostForm( request.POST, request.FILES, instance=self.post)
+            sentiment = []
+        
+            context = {}
             if self.form.is_valid():
+                # print (self.form.instance)
+                moji_list =[['🙂','😄','😁','😆','😀','😊','😃'],
+                ['😢','😥','😰','😓','🙁','😟','😞','😔','😣','😫','😩'],
+                ['😡','😠','😤','😖'],
+                ['🙄','😒','😑','😕'],
+                ['😱'],
+                ['😨','😧','😦'],
+                ['😮','😲','😯'],
+                ['😴','😪'],
+                ['😋','😜','😝','😛'],
+                ['😍','💕','😘','😚','😙','😗'],
+                ['😌'],
+                ['😐'],
+                ['😷'],
+                ['😳'],
+                ['😵'],
+                ['💔'],
+                ['😎','😈'],
+                ['🙃','😏','😂','😭'],
+                ['😬','😅','😶'],
+                ['😉'],
+                ['💖','💙','💚','💗','💓','💜','💘','💛'],
+                ['😇']]
+                url = "https://api.aiforthai.in.th/emoji"
+                text = self.form.instance
+                params = {'text':text}
+            
+                headers = {
+                    'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                    }
+                response = requests.get(url, params=params, headers=headers,)
+        
+                keys=response.json().keys()
+                self.emoji = [moji_list[int(k)][0] for k in keys]
+                emoji =  ""
+                for i in self.emoji:
+                    emoji += i
+            
+    
+                url = "https://api.aiforthai.in.th/ssense"
+                
+                text = self.form.instance
+                
+                
+                print(f'___text____{text}___________')
+                data = {'text':text}
+                
+                headers = {
+                    'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                    }
+        
+                self.response = requests.post(url, data=data, headers=headers)
+                self.polarity = (self.response.json()['sentiment']['polarity'])
+                self.score = (self.response.json()['sentiment']['score'])
+                print(self.polarity,self.score,self.emoji )
+                self.form.instance.sentiment =  self.polarity
+                self.form.instance.score  =self.score
+                self.form.instance.emoji =emoji
+                self.form.instance.sentiment =  self.polarity
                 self.form.instance.author = self.request.user
                 self.form.save()
-                messages.success(request, "Your account has been updated!")
-                return redirect(f'/detail/{pk}/')
+                # print(self.form)
+                messages.success(request, 'เพิ่มสำเร็จ')
+                return redirect(f'/detail/{self.post.pk}/')
+
+       
+           
             else:
-                messages.success(request, "จะไปแก้ของคนอื่นได้ไง")
+                self.form = self.form(instance=self.request.user)
+            self.context = {'form':self.form}
+            return self.render(request,pk)
+        return self.render(request.pk)
            
-        else:
-            self.form = PostForm( instance=self.post)
-           
-        self.context = {'form':self.form}
-        return self.render(request,pk)
+              
 
 class DeleteView(LoginRequiredMixin,View):
     models = Post
@@ -346,10 +411,42 @@ class TotalView(LoginRequiredMixin,View):
     def render(self, request, *args, **kwargs):
         return render(request, self.template_name, self.context)
 
+    
+
+
     def get(self, request, *args, **kwargs):
+        import random
+        from django.core.cache import cache
+        import datetime
   
         self.post = self.models.objects.filter(author=request.user)
         self.author = self.author_models.objects.filter(pk=request.user.pk).first()
-        self.context = { 'post': self.post,'author': self.author}
+
+        list1=[]
+        for i in self.post:
+            
+            list1[:0]=i.emoji
+            # list1[:]=i.emoji
+            # print(i.id,i.emoji,len(list1[:0]))
+        # print(list1)
+        r=random.choice(list1)
+        p=self.models.objects.filter(author=request.user)
+        print(p[0].id)
+        b =p[0].date_posted
+        
+        d = b.strftime("%b")
+        print(d)
+        
+        getmonth = request.POST.get('month')
+        for m in p:
+            print(m.date_posted)
+
+        # rating_point = request.POST.get('point')
+        # p=  list(self.models.objects.filter(author=request.user).values_list('id', flat=True))
+        # for i in range(len(p)):
+        #     print(p[i])
+
+        
+        self.context = {  'emo': r,'post': self.post,'author': self.author}
         
         return self.render(request)

@@ -175,13 +175,21 @@
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                  ดูไดอารี่ตามเดื่อน
                 </button>
+                
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="#">มกราคม</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+                  <a class="dropdown-item" name="01" value="01" >มกราคม</a>
+                  <a class="dropdown-item" href="#">กุมภาพันธ์</a>
+                  <a class="dropdown-item" href="#">มีนาคม</a>
+                  <a class="dropdown-item" href="#">เมษายน</a>
+                  <a class="dropdown-item" href="#">พฤษภาคม</a>
+                  <a class="dropdown-item" href="#">มิถุนายน</a>
+                  <a class="dropdown-item" href="#">กรกฎาคม</a>
+                  <a class="dropdown-item" href="#">สิงหาคม</a>
+                  <a class="dropdown-item" href="#">กันยายน</a>
+                  <a class="dropdown-item" href="#">ตุลาคม</a>
+                  <a class="dropdown-item" href="#">พฤศจิกายน</a>
+                  <a class="dropdown-item" href="#">ธันวาคม</a>
+                 
               </div>
               <a href="/create/" class="btn  btn-neutral"><i class="ni ni-ruler-pencil text-orange"></i>&nbsp;เพิ่มไดอารี่</a>
             </div>
@@ -200,9 +208,10 @@
                       <span class="h2 font-weight-bold mb-0">{{i.title|safe|truncatewords:"1"}}</span>
                     </div>
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                      <div class="icon icon-shape bg-gradient-white text-white rounded-circle shadow">
                         {% comment %} <i class="ni ni-active-40"></i> {% endcomment %}
-                        <span style='font-size:50px;'>&#128512;</span>
+                        <span style='font-size:50px;'>{{emo}}</span>
+                        
                       </div>
                     </div>
                   </div>

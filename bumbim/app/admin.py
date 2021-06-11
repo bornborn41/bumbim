@@ -6,10 +6,9 @@ from .models import Author, Post
 
 class PostAdmin(admin.ModelAdmin):
 
-    list_display = ('id',  'author','title' ,'content','image',  'date_posted')
+    list_display = ('id',  'author','title' ,'content','image', 'emoji','score', 'date_posted')
     list_display_links = ('id', 'author',)
     list_filter = ('author', 'date_posted')
-    list_editable = ( 'title' ,'content','image', )
     search_fields = ( 'title','content' ,'author__username',)
     list_per_page = 20
 
