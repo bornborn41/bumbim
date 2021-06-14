@@ -1,3 +1,4 @@
+import datetime, pytz
 from django.contrib.auth.forms import AuthenticationForm
 from django.http.response import HttpResponseRedirect
 from app.forms import LoginForm, PostForm, ProfileForm, RegisterForm
@@ -159,11 +160,25 @@ class HomeView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         if self.request.user.is_anonymous:
             return redirect('login')
+        tz = pytz.timezone('Asia/Bangkok')
         self.form = self.form(initial=self.initial)
         self.post = self.models.objects.filter(author=request.user)
         self.author = self.author_models.objects.filter(pk=request.user.pk).first()
-        print(self.author)
-        self.context = {'form': self.form,'post': self.post,'author': self.author}
+        this_month = datetime.datetime.now(tz)
+        month_name = 'x มกราคม กุมภาพันธ์ มีนาคม เมษายน พฤษภาคม มิถุนายน กรกฎาคม สิงหาคม กันยายน ตุลาคม พฤศจิกายน ธันวาคม'.split()[this_month.month]
+        thai_year = this_month.year + 543
+        this_month2 = datetime.datetime.now().month
+        self.filterAll = self.models.objects.filter(author=request.user,date_posted__month=this_month2)
+        self.filterPossi = self.models.objects.filter(author=request.user,sentiment="positive",date_posted__month=this_month2)
+        self.filterNeg = self.models.objects.filter(author=request.user,sentiment="negative",date_posted__month=this_month2)
+        self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
+        self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
+        roundPossi = round(self.calPossi)
+        roundNeg = round(self.calNeg)
+    
+        
+        
+        self.context = {'roundPossi':roundPossi,'roundNeg':roundNeg,'month_name':month_name,'filter':self.filterAll,'form': self.form,'post': self.post,'author': self.author}
         
         return self.render(request)
         
@@ -411,8 +426,6 @@ class TotalView(LoginRequiredMixin,View):
     def render(self, request, *args, **kwargs):
         return render(request, self.template_name, self.context)
 
-    
-
 
     def get(self, request, *args, **kwargs):
         import random
@@ -430,23 +443,19 @@ class TotalView(LoginRequiredMixin,View):
             # print(i.id,i.emoji,len(list1[:0]))
         # print(list1)
         r=random.choice(list1)
-        p=self.models.objects.filter(author=request.user)
-        print(p[0].id)
-        b =p[0].date_posted
+        if request.GET.get('month'):
+            p=self.models.objects.filter(author=request.user)    
+            getmonth = request.GET.get('month')
+            print(getmonth)
+            filterM = self.models.objects.filter(author=request.user,date_posted__month=getmonth)
+            print(filterM)
+            self.context = {'filter': filterM}
+            return self.render(request) 
+        else:
+            self.context = {'emo': r,'post': self.post,'author': self.author}
+            return self.render(request)
+       
         
-        d = b.strftime("%b")
-        print(d)
+        # self.context = {'emo': r,'post': self.post,'author': self.author}
         
-        getmonth = request.POST.get('month')
-        for m in p:
-            print(m.date_posted)
-
-        # rating_point = request.POST.get('point')
-        # p=  list(self.models.objects.filter(author=request.user).values_list('id', flat=True))
-        # for i in range(len(p)):
-        #     print(p[i])
-
-        
-        self.context = {  'emo': r,'post': self.post,'author': self.author}
-        
-        return self.render(request)
+        # return self.render(request)

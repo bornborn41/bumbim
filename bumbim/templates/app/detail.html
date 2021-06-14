@@ -208,9 +208,11 @@
                   {%if post.image %}
                   <center><img style="width:30%" src="{{post.image.url}}" alt=""></center>
                 {%endif%}
-                  <h2 class="mt-3 mb-0 text">
-                    <span class="text-nowrap">{{post.content|safe}}</span>
-                  </h2>
+                 <p class="mt-3 mb-0 text-sm">
+                    <span class="text-nowrap">{{post.content|safe|linebreaks}}</span>
+                    
+                  </p>
+                 
                   <br> <br>
                    
                    

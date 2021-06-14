@@ -159,12 +159,12 @@
         <div class="header-body">
           <div class="row align-items-center py-4">
             <div class="col-lg-6 col-7">
-              <h6 class="h2 text-white d-inline-block mb-0">ไดอารี่ทั้งหมด</h6>
+              <h6 class="h2 text-white d-inline-block mb-0"><a href="/total/">ไดอารี่ทั้งหมด</a></h6>
               <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                 <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                   <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
                   <li class="breadcrumb-item"><a href="/">หน้าเเรก</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">ไดอารี่ทั้งหมด</li>
+                  <li class="breadcrumb-item active" aria-current="page"><a href="/total/">ไดอารี่ทั้งหมด</a></li>
             <!-- Example single danger button -->
 
                 </ol>
@@ -175,29 +175,34 @@
                 <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                  ดูไดอารี่ตามเดื่อน
                 </button>
-                
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" name="01" value="01" >มกราคม</a>
-                  <a class="dropdown-item" href="#">กุมภาพันธ์</a>
-                  <a class="dropdown-item" href="#">มีนาคม</a>
-                  <a class="dropdown-item" href="#">เมษายน</a>
-                  <a class="dropdown-item" href="#">พฤษภาคม</a>
-                  <a class="dropdown-item" href="#">มิถุนายน</a>
-                  <a class="dropdown-item" href="#">กรกฎาคม</a>
-                  <a class="dropdown-item" href="#">สิงหาคม</a>
-                  <a class="dropdown-item" href="#">กันยายน</a>
-                  <a class="dropdown-item" href="#">ตุลาคม</a>
-                  <a class="dropdown-item" href="#">พฤศจิกายน</a>
-                  <a class="dropdown-item" href="#">ธันวาคม</a>
-                 
+                <form method="get" role="form">
+                <div  class="dropdown-menu">
+                  <button type="sumit" class="dropdown-item" name="month" value="01">มกราคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="02">กุมภาพันธ์</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="03">มีนาคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="04">เมษายน</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="05">พฤษภาคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="06">มิถุนายน</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="07">กรกฎาคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="08">สิงหาคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="09">กันยายน</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="10">ตุลาคม</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="11">พฤศจิกายน</bottom>
+                  <button type="sumit" class="dropdown-item" name="month" value="12">ธันวาคม</bottom>
               </div>
+              </form>
               <a href="/create/" class="btn  btn-neutral"><i class="ni ni-ruler-pencil text-orange"></i>&nbsp;เพิ่มไดอารี่</a>
             </div>
           </div>
           <!-- Card stats -->
          
-          <div class="row">
-          {% for i in post %}
+  
+        </div>
+      </div>
+              <div class="row">
+            {% if filter %}
+            {% for i in filter %}
+    
             <div class="col-xl-3 col-md-6">
               <div class="card card-stats">
                 <!-- Card body -->
@@ -223,9 +228,41 @@
               </div>
             </div>
              {% endfor %}
+            {% elif filter.count == 0%}
+            
+            <h1 style="font-weight:bold;font-size:50;color:white;"><center>ไม่พบข้อมูลไดอารี่ในเดือนนี้</center></h1>
+           
+             {% else %}
+            {% for i in post %}
+            
+            <div class="col-xl-3 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title font-weight-bold text-muted mb-0">{{i.date_posted|date:"d F  h:i " }}</h5>
+                      <span class="h2 font-weight-bold mb-0">{{i.title|safe|truncatewords:"1"}}</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-gradient-white text-white rounded-circle shadow">
+                        {% comment %} <i class="ni ni-active-40"></i> {% endcomment %}
+                        <span style='font-size:50px;'>{{emo}}</span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm">
+                    <span class="text-nowrap">{{i.content|safe|truncatewords:"1"|linebreaks}}</span>
+                    <a href="/detail/{{i.id}}"><span class="text-success mr-2"><i class="fa fa-arrow-up"></i> อ่านต่อ</span></a>
+                  </p>
+                </div>
+              </div>
+            </div>
+             {% endfor %}
+
+             {% endif %}
           </div>
-        </div>
-      </div>
     </div>
     <!-- Page content -->
     
