@@ -77,23 +77,10 @@
   <!-- Main content -->
   <div class="main-content" id="panel">
     <!-- Topnav -->
-    <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
+    <nav class="navbar navbar-top navbar-expand navbar-dark bg-pink border-bottom">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!-- Search form -->
-          <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
-            <div class="form-group mb-0">
-              <div class="input-group input-group-alternative input-group-merge">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="fas fa-search"></i></span>
-                </div>
-                <input class="form-control" placeholder="Search" type="text">
-              </div>
-            </div>
-            <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </form>
+          
           <!-- Navbar links -->
           <ul class="navbar-nav align-items-center  ml-md-auto ">
             <li class="nav-item d-xl-none">
@@ -116,11 +103,12 @@
             <li class="nav-item dropdown">
               <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="media align-items-center">
+                
                   <span class="avatar avatar-sm rounded-circle">
-                    <img style="width:100%; height:100%;object-fit:cover;" alt="Image placeholder" src="{{author.image.url}}">
+                    <img style="width:100%; height:100%;object-fit:cover;" alt="Image placeholder" src="{{profiles.image.url}}">
                   </span>
                   <div class="media-body  ml-2  d-none d-lg-block">
-                    <span class="mb-0 text-sm  font-weight-bold">{{author.username}}</span>
+                    <span class="mb-0 text-sm  font-weight-bold">{{profiles.username}}</span>
                   </div>
                 </div>
               </a>
@@ -153,7 +141,7 @@
     </nav>
     <!-- Header -->
     <!-- Header -->
-    <div class="header bg-primary pb-6">
+    <div class="header bg-pink pb-6">
       <div class="container-fluid">
         <div class="header-body">
           <div class="row align-items-center py-4">
@@ -182,12 +170,12 @@
     <div class="container-fluid mt--6">
       <div class="row justify-content-center">
         <div class="col-xl-8">
-          <div class="card bg-default">
-            <div class="card-header bg-transparent">
+          <div class="card bg-skyblue">
+            <div class="card-header bg-skyblue">
               <div class="row align-items-center">
                 <div class="col">
-                  <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-                  <h5 class="h3 text-white mb-0">Sales value</h5>
+                  <h6 class="text-light text-uppercase ls-1 mb-1">Edit Profile</h6>
+                  <h5 class="h3 text-black mb-0">Edit Profile</h5>
                 </div>
                 
               </div>
@@ -195,8 +183,12 @@
             <div class="card-body">
             <form enctype="multipart/form-data" method="POST">
                  {% csrf_token %}
-                 <img style="width:40%; height:40%;object-fit:cover;" src="{{profiles.image.url}}">
-                 <br>
+                   <div class="card-profile-image">
+                  <a>
+                    {% comment %} <img  src="{{profiles.image.url}}" class="rounded-circle"  > {% endcomment %}
+                  </a>
+                </div>
+                 
                  {{form|crispy}}
                  <br>
                 <div class="modal-footer">

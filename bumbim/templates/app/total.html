@@ -30,7 +30,9 @@
       <!-- Brand -->
       <div class="sidenav-header  align-items-center">
         <a class="navbar-brand" href="javascript:void(0)">
-          <img src="{% static 'assets/img/brand/blue.png' %}" class="navbar-brand-img" alt="...">
+        {% comment %} <h1 style="font-size:40px;"><strong>Live Diary</strong></h1> {% endcomment %}
+          <h6 style="font-size:30px;" class="h2 text-black d-inline-block mb-0"><i class="fas fa-book-open fa-1x"></i>Live Diary</h6>
+          {% comment %} <img src="{% static 'assets/img/brand/blue.png' %}" class="navbar-brand-img" alt="..."> {% endcomment %}
         </a>
       </div>
       <div class="navbar-inner">
@@ -82,8 +84,13 @@
     <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <div class="col-lg-6 col-7">
+              <h6 style="font-size:40px;" class="h2 text-white d-inline-block mb-0"><i class="fas fa-book-open fa-1x"></i>Live Diary</h6>
+          
+            </div>
+             
           <!-- Search form -->
-          <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+          {% comment %} <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
             <div class="form-group mb-0">
               <div class="input-group input-group-alternative input-group-merge">
                 <div class="input-group-prepend">
@@ -96,7 +103,7 @@
               aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
-          </form>
+          </form> {% endcomment %}
           <!-- Navbar links -->
           <ul class="navbar-nav align-items-center  ml-md-auto ">
             <li class="nav-item d-xl-none">
@@ -166,7 +173,7 @@
           <div class="row align-items-center py-4">
             <div class="col-lg-6 col-7">
               <h6 class="h2 text-white d-inline-block mb-0"><a href="/total/">ไดอารี่ทั้งหมด</a></h6>
-              <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+               <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                 <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                   <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
                   <li class="breadcrumb-item"><a href="/">หน้าเเรก</a></li>
@@ -174,7 +181,7 @@
                   <!-- Example single danger button -->
 
                 </ol>
-              </nav>
+              </nav> 
             </div>
             <div class="col-lg-6 col-5 text-right">
               <div class="btn-group">
