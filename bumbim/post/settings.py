@@ -138,20 +138,20 @@ MEDIA_URL = '/media/'
 DJRICHTEXTFIELD_CONFIG = {
     'js': ['//cdn.ckeditor.com/4.14.0/standard/ckeditor.js'],
     'init_template': 'djrichtextfield/init/ckeditor.js',
-'settings': {  # CKEditor
-    'toolbar': [
-        {'items': ['Format', '-', 'Bold', 'Italic', '-',
-                   'RemoveFormat']},
-        {'items': ['Link', 'Unlink', 'Image', 'Table']},
-        {'items': ['Source']}
-    ],
-    'format_tags': 'p;h1;h2;h3',
-    'width': 1190
-     
-}
+    'settings': {  # CKEditor
+        'toolbar': 'Full',
+        # 'toolbar': [
+        #     {'items': ['Format', '-', 'Bold', 'Italic', '-',
+        #                'RemoveFormat']},
+        #     {'items': ['Link', 'Unlink', 'Image', 'Table']},
+        #     {'items': ['Source']}
+        # ],
+        # 'format_tags': 'p;h1;h2;h3',
+        'width': 1000
+
+    }
 
 }
-
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
- 
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,14 +16,15 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
   <!-- Icons -->
   <link rel="stylesheet" href="{% static 'assets/vendor/nucleo/css/nucleo.css' %}" type="text/css">
-  <link rel="stylesheet" href="{% static 'assets/vendor/@fortawesome/fontawesome-free/css/all.min.css ' %}" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="{% static 'assets/vendor/@fortawesome/fontawesome-free/css/all.min.css' %}"
+    rel="stylesheet" type="text/css">
   <!-- Argon CSS -->
-  <link rel="stylesheet" href="{% static 'assets/css/argon.css ' %}" type="text/css">
+  <link rel="stylesheet" href="{% static 'assets/css/argon.css' %}" type="text/css">
 </head>
 
 <body class="bg-default">
   <!-- Navbar -->
-  
+
   <!-- Main content -->
   <div class="main-content">
     <!-- Header -->
@@ -33,13 +34,15 @@
           <div class="row justify-content-center">
             <div class="col-xl-5 col-lg-2 col-md-8 px-5">
               <h1 class="text-white">Welcome!</h1>
-              <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for free.</p>
+              <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for
+                free.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="separator separator-bottom separator-skew zindex-100">
-        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1"
+          xmlns="http://www.w3.org/2000/svg">
           <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
         </svg>
       </div>
@@ -54,14 +57,14 @@
                 <small>Or sign in with credentials</small>
               </div>
               <form enctype="multipart/form-data" method="POST">
-              {% csrf_token %}
+                {% csrf_token %}
                 <div class="form-group mb-3">
                   {{ form.username|as_crispy_field}}
                 </div>
                 <div class="form-group">
                   {{ form.password|as_crispy_field}}
                 </div>
-                
+
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary my-4">เข้าสู่ระบบ</button>
                 </div>
@@ -99,44 +102,3 @@
   <!-- Argon JS -->
   <script src="{% static 'assets/js/argon.js' %}"></script>
 </body>
-
-</html>
-{% comment %} <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Register - Life Dairy</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-    <h1>Login</h1>
-    
-       <div class="container">
-       <div class="center">
-
-    <form enctype="multipart/form-data" method="POST">
-                 {% csrf_token %}
-                 <div class="form-group ">
-            {{ form.username|as_crispy_field}}
-             </div>
-              <div class="form-group ">
-             {{ form.password|as_crispy_field}}
-              </div>
-            <br>
-            <div class="modal-footer">
-        
-        <button  type="submit"  class="btn btn-danger btn-lg btn-block rounded-pill" >Login</button>
-      </div>
-        </form> 
-       </div>
-       </div>
-        <script src="" async defer></script>
-    </body>
-</html> {% endcomment %}
