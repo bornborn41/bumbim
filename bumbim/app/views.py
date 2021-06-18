@@ -493,13 +493,17 @@ class TotalView(LoginRequiredMixin, View):
         # print(list1)
         r = random.choice(list1)
         if request.GET.get('month'):
+            self.post = self.models.objects.filter(author=request.user)
+            self.author = self.author_models.objects.filter(
+                pk=request.user.pk).first()
             p = self.models.objects.filter(author=request.user)
             getmonth = request.GET.get('month')
             print(getmonth)
             filterM = self.models.objects.filter(
                 author=request.user, date_posted__month=getmonth)
             print(filterM)
-            self.context = {'filter': filterM}
+            self.context = {'filter': filterM,
+                            'post': self.post, 'author': self.author}
             return self.render(request)
         else:
             self.context = {'emo': r, 'post': self.post, 'author': self.author}
