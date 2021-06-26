@@ -8,6 +8,9 @@ django = "==2.2.7"
 pillow = "*"
 django-crispy-forms = "*"
 django-richtextfield = "*"
+requests ="*"
+html2text = "*"
+bs4 = "*"
 
 [dev-packages]
 

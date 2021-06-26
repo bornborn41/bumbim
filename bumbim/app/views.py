@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 import requests
+from bs4 import BeautifulSoup
 # Create your views here.
 
 
@@ -236,6 +237,111 @@ class HomeView(LoginRequiredMixin, View):
         return self.render(request)
 
 
+class CreateView(LoginRequiredMixin, View):
+    models = Post
+    form = PostForm
+    author_models = Author
+    initial = {'key': 'value'}
+    template_name = 'app/create.html'
+    success_url = "total"
+
+    def render(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def get(self, request, *args, **kwargs):
+
+        self.form = self.form(initial=self.initial)
+        self.post = self.models.objects.filter(author=request.user)
+        self.author = self.author_models.objects.filter(
+            pk=request.user.pk).first()
+        self.context = {'form': self.form,
+                        'post': self.post, 'author': self.author}
+
+        return self.render(request)
+
+    def post(self, request, *args, **kwargs):
+        from bs4 import BeautifulSoup
+        self.form = self.form(request.POST, request.FILES)
+
+        if self.form.is_valid():
+            sentiment = []
+            context = {}
+
+            moji_list = [['🙂', '😄', '😁', '😆', '😀', '😊', '😃'],
+                         ['😢', '😥', '😰', '😓', '🙁', '😟', '😞', '😔', '😣', '😫', '😩'],
+                         ['😡', '😠', '😤', '😖'],
+                         ['🙄', '😒', '😑', '😕'],
+                         ['😱'],
+                         ['😨', '😧', '😦'],
+                         ['😮', '😲', '😯'],
+                         ['😴', '😪'],
+                         ['😋', '😜', '😝', '😛'],
+                         ['😍', '💕', '😘', '😚', '😙', '😗'],
+                         ['😌'],
+                         ['😐'],
+                         ['😷'],
+                         ['😳'],
+                         ['😵'],
+                         ['💔'],
+                         ['😎', '😈'],
+                         ['🙃', '😏', '😂', '😭'],
+                         ['😬', '😅', '😶'],
+                         ['😉'],
+                         ['💖', '💙', '💚', '💗', '💓', '💜', '💘', '💛'],
+                         ['😇']]
+            url = "https://api.aiforthai.in.th/emoji"
+            c = self.form.cleaned_data['content']
+            soup = BeautifulSoup(c)
+            print(soup.get_text())
+
+            params = {'text': soup.get_text()}
+
+            headers = {
+                'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+            }
+            response = requests.get(url, params=params, headers=headers,)
+
+            keys = response.json().keys()
+            self.emoji = [moji_list[int(k)][0] for k in keys]
+            emoji = ""
+            for i in self.emoji:
+                emoji += i
+                url = "https://api.aiforthai.in.th/ssense"
+
+                data = {'text': soup.get_text()}
+
+                headers = {
+                    'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                }
+
+            self.response = requests.post(url, data=data, headers=headers)
+            self.polarity = (self.response.json()['sentiment']['polarity'])
+            self.score = (self.response.json()['sentiment']['score'])
+            print(type(self.score))
+            if self.score <= "0":
+                redirect("/test/")
+
+            if self.polarity == "negative":
+                self.form.instance.display_emoji = '😫'
+            else:
+                self.form.instance.display_emoji = '😃'
+            self.form.instance.sentiment = self.polarity
+            self.form.instance.score = self.score
+            self.form.instance.emoji = emoji
+            self.form.instance.sentiment = self.polarity
+            self.form.instance.author = self.request.user
+            self.form.save()
+            messages.success(request, 'เพิ่มสำเร็จ')
+            return redirect(self.success_url)
+
+        else:
+            if self.score <= 0:
+                redirect("/test/")
+            self.form = self.form(instance=self.request.user)
+        self.context = {'form': self.form}
+        return self.render(request)
+
+
 class EditView(LoginRequiredMixin, View):
     models = Post
     success_url = "edit"
@@ -289,8 +395,11 @@ class EditView(LoginRequiredMixin, View):
                              ['💖', '💙', '💚', '💗', '💓', '💜', '💘', '💛'],
                              ['😇']]
                 url = "https://api.aiforthai.in.th/emoji"
-                text = self.form.instance
-                params = {'text': text}
+                c = self.form.cleaned_data['content']
+                soup = BeautifulSoup(c)
+                print(soup.get_text())
+
+                params = {'text': soup.get_text()}
 
                 headers = {
                     'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
@@ -302,29 +411,33 @@ class EditView(LoginRequiredMixin, View):
                 emoji = ""
                 for i in self.emoji:
                     emoji += i
+                    url = "https://api.aiforthai.in.th/ssense"
 
-                url = "https://api.aiforthai.in.th/ssense"
+                    data = {'text': soup.get_text()}
 
-                text = self.form.instance
-
-                print(f'___text____{text}___________')
-                data = {'text': text}
-
-                headers = {
-                    'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
-                }
+                    headers = {
+                        'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
+                    }
 
                 self.response = requests.post(url, data=data, headers=headers)
                 self.polarity = (self.response.json()['sentiment']['polarity'])
                 self.score = (self.response.json()['sentiment']['score'])
-                print(self.polarity, self.score, self.emoji)
+                print(type(self.score))
+                if self.score <= "0":
+                    redirect("/test/")
+
+                if self.polarity == "negative":
+                    self.form.instance.display_emoji = '😫'
+                else:
+                    self.form.instance.display_emoji = '😃'
+
                 self.form.instance.sentiment = self.polarity
                 self.form.instance.score = self.score
                 self.form.instance.emoji = emoji
                 self.form.instance.sentiment = self.polarity
                 self.form.instance.author = self.request.user
                 self.form.save()
-                # print(self.form)
+                print(self.form)
                 messages.success(request, 'เพิ่มสำเร็จ')
                 return redirect(f'/detail/{self.post.pk}/')
 
@@ -369,103 +482,6 @@ class DetailView(LoginRequiredMixin, View):
         return self.render(request, pk)
 
 
-class CreateView(LoginRequiredMixin, View):
-    models = Post
-    form = PostForm
-    author_models = Author
-    initial = {'key': 'value'}
-    template_name = 'app/create.html'
-    success_url = "total"
-
-    def render(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.context)
-
-    def get(self, request, *args, **kwargs):
-
-        self.form = self.form(initial=self.initial)
-        self.post = self.models.objects.filter(author=request.user)
-        self.author = self.author_models.objects.filter(
-            pk=request.user.pk).first()
-        self.context = {'form': self.form,
-                        'post': self.post, 'author': self.author}
-
-        return self.render(request)
-
-    def post(self, request, *args, **kwargs):
-        self.form = self.form(request.POST, request.FILES)
-        sentiment = []
-
-        context = {}
-        if self.form.is_valid():
-            # print (self.form.instance)
-            moji_list = [['🙂', '😄', '😁', '😆', '😀', '😊', '😃'],
-                         ['😢', '😥', '😰', '😓', '🙁', '😟', '😞', '😔', '😣', '😫', '😩'],
-                         ['😡', '😠', '😤', '😖'],
-                         ['🙄', '😒', '😑', '😕'],
-                         ['😱'],
-                         ['😨', '😧', '😦'],
-                         ['😮', '😲', '😯'],
-                         ['😴', '😪'],
-                         ['😋', '😜', '😝', '😛'],
-                         ['😍', '💕', '😘', '😚', '😙', '😗'],
-                         ['😌'],
-                         ['😐'],
-                         ['😷'],
-                         ['😳'],
-                         ['😵'],
-                         ['💔'],
-                         ['😎', '😈'],
-                         ['🙃', '😏', '😂', '😭'],
-                         ['😬', '😅', '😶'],
-                         ['😉'],
-                         ['💖', '💙', '💚', '💗', '💓', '💜', '💘', '💛'],
-                         ['😇']]
-            url = "https://api.aiforthai.in.th/emoji"
-            text = self.form.instance
-            params = {'text': text}
-
-            headers = {
-                'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
-            }
-            response = requests.get(url, params=params, headers=headers,)
-
-            keys = response.json().keys()
-            self.emoji = [moji_list[int(k)][0] for k in keys]
-            emoji = ""
-            for i in self.emoji:
-                emoji += i
-
-            url = "https://api.aiforthai.in.th/ssense"
-
-            text = self.form.instance
-
-            print(f'___text____{text}___________')
-            data = {'text': text}
-
-            headers = {
-                'Apikey': "3gCn6fXC0WwqfKGJbS309aWqnXiyyf1M"
-            }
-
-            self.response = requests.post(url, data=data, headers=headers)
-            self.polarity = (self.response.json()['sentiment']['polarity'])
-            self.score = (self.response.json()['sentiment']['score'])
-            print(self.polarity, self.score, self.emoji)
-            self.form.instance.sentiment = self.polarity
-            self.form.instance.score = self.score
-            self.form.instance.emoji = emoji
-            self.form.instance.sentiment = self.polarity
-            self.form.instance.author = self.request.user
-            self.form.save()
-            # print(self.form)
-            messages.success(request, 'เพิ่มสำเร็จ')
-            return redirect(self.success_url)
-
-        else:
-            self.form = self.form(instance=self.request.user)
-        self.context = {'form': self.form}
-        return self.render(request)
-
-
 class TotalView(LoginRequiredMixin, View):
     models = Post
     author_models = Author
@@ -484,31 +500,64 @@ class TotalView(LoginRequiredMixin, View):
         self.author = self.author_models.objects.filter(
             pk=request.user.pk).first()
 
-        list1 = []
-        for i in self.post:
+        # list1 = []
+        # for i in self.post:
 
-            list1[:0] = i.emoji
-            # list1[:]=i.emoji
-            # print(i.id,i.emoji,len(list1[:0]))
-        # print(list1)
-        r = random.choice(list1)
+        #     list1[:0] = i.emoji
+
+        # r = random.choice(list1)
         if request.GET.get('month'):
-            self.post = self.models.objects.filter(author=request.user)
+
             self.author = self.author_models.objects.filter(
                 pk=request.user.pk).first()
             p = self.models.objects.filter(author=request.user)
             getmonth = request.GET.get('month')
-            print(getmonth)
             filterM = self.models.objects.filter(
                 author=request.user, date_posted__month=getmonth)
-            print(filterM)
+            # print(filterM)
             self.context = {'filter': filterM,
                             'post': self.post, 'author': self.author}
+
             return self.render(request)
         else:
-            self.context = {'emo': r, 'post': self.post, 'author': self.author}
+            self.negative = list(self.models.objects.filter(
+                author=request.user, sentiment="negative").values_list('sentiment', flat=True))
+            print(self.negative)
+            self.positive = list(self.models.objects.filter(
+                author=request.user, sentiment="positive").values_list('sentiment', flat=True))
+            print(self.positive)
+            emo_positive = [
+                x for x in self.negative if x in self.positive and x in self.negative]
+            emo_negative = [x for x in self.negative +
+                            self.positive if x not in self.negative or x not in self.positive]
+            print(emo_positive, emo_negative)
+
+            self.context = {
+                'post': self.post, 'author': self.author
+            }
+
             return self.render(request)
 
         # self.context = {'emo': r,'post': self.post,'author': self.author}
 
         # return self.render(request)
+
+
+class TestView(View):
+    template_name = 'app/test.html'
+    model = Post
+    success_url = "/test/"
+
+    def render(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def get(self, request, *args, **kwargs):
+        from bs4 import BeautifulSoup
+
+        t = "<p>เพราะ<strong>&nbsp;ความสุข</strong>&nbsp;ของคนเราขึ้นอยู่กับมุมมองของการใช้ชีวิต<br /> <br /> หากมัวแต่มองชีวิตเฉพาะในส่วนที่&nbsp;<strong>ผิดพลาดล้มเหลว</strong><br /> <br /> ชีวิตก็คงไร้ซึ่งความสุขอยู่ไม่จบไม่สิ้น<br /> <br /> แต่กลับกัน .. ถ้าหากคนเรา&nbsp;<strong>มองชีวิตในด้านบวก</strong><br /> <br /> และมองเห็นความสุขเล็ก ๆ น้อย ๆ ในชีวิตแต่ละวัน<br /> <br /> แล้วเลือกที่จะมองข้ามส่วนที่ผิดพลาดล้มเหลวไปล่ะก็<br /> <br /> ชีวิตของคนเราก็คงจะมี<strong>คุณค่ามีความสุข</strong>มากขึ้นอย่างไม่น่าเชื่อ</p>"
+        soup = BeautifulSoup(t)
+
+        print(soup.get_text())
+
+        self.context = {'title': soup.get_text(), 'b': t}
+        return self.render(request)
