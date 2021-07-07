@@ -31,13 +31,31 @@ class LoginForm(UserCreationForm):
         model = Author
         fields = ['username', 'password']
         widgets = {
+            
             'password': forms.TextInput(attrs={'class': 'form-controls', 'type': 'password', 'name': 'password'}),
+        }, 
+        
+        help_texts = {
+            'username': None,
+            
         }
+        
+        
 
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField()
 
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+
+        for fieldname in [ 'email', 'password1']:
+            self.fields[fieldname].help_text = None
+            self.fields['password1'].help_text= "ประกอบไปด้วยอักษรอย่างน้อย 8 อักษร และไม่เหมือนกับ Username"
     class Meta:
         model = Author
         fields = ['username', 'email', 'password1', 'password2', 'image']
+       
+        help_texts = {
+            'username': "ไม่ช้ำกับผู้ใช้งานในระบบ และไม่เหมือนกับรหัสผ่าน"
+        }
