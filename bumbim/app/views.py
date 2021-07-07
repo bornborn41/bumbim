@@ -35,13 +35,11 @@ class RegisterView(View):
 
         self.form = self.form(initial=self.initial)
         print(self.form)
-        self.context = {'form': self.form}
+        self.context = {'form': self.form,'title':"Register | Live Diary"}
         return self.render(request)
 
     def post(self, request, *args, **kwargs):
         self.form = self.form(request.POST, request.FILES,)
-        if self.request.user.is_authenticated:
-            return redirect('home')
 
         if self.form.is_valid():
 
@@ -70,7 +68,7 @@ class LoginView(View):
     def get(self, request, *args, **kwargs):
 
         self.form = self.form(initial=self.initial)
-        self.context = {'form': self.form}
+        self.context = {'form': self.form, 'title': "Login | Live Diary"}
         return self.render(request)
 
     def post(self, request, *args, **kwargs):
@@ -79,9 +77,7 @@ class LoginView(View):
         self.password = request.POST.get('password', '')
         self.user = authenticate(
             username=self.username, password=self.password)
-        # if request.method == 'POST':
-        if self.request.user.is_authenticated:
-            return redirect('member_all')
+  
         if self.user is not None:
 
             if self.user.is_active:
@@ -111,7 +107,8 @@ class ProfileView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         self.profile = self.models.objects.filter(pk=request.user.pk).first()
         self.post = self.models.objects.all()
-        self.context = {'profiles': self.profile}
+        self.context = {'profiles': self.profile,
+                        'title': "Profile | Live Diary"}
         return self.render(request)
 
 
@@ -131,7 +128,7 @@ class EditProfileView(LoginRequiredMixin, View):
         else:
             messages.info(request, "ของคนอื่นแก้ไม่ได้")
             return redirect('home')
-        self.context = {'form': self.form, 'profiles': self.profile}
+        self.context = {'form': self.form, 'profiles': self.profile, 'title': "EditProfile | Live Diary"}
         return self.render(request, username)
 
     def post(self, request, username, *args, **kwargs):
@@ -185,7 +182,7 @@ class HomeView(LoginRequiredMixin, View):
             self.filterNeg = self.models.objects.filter(
                 author=request.user, sentiment="negative", date_posted__month=getmonth)
             print(len(self.filterPossi), len(self.filterNeg))
-            if len(self.filter) is not 0:
+            if len(self.filter) != 0:
                 if len(self.filterPossi) > 0 and len(self.filterNeg) > 0:
 
                     self.calPossi = (len(self.filterPossi) *
@@ -233,7 +230,7 @@ class HomeView(LoginRequiredMixin, View):
                 author=request.user, sentiment="positive", date_posted__month=this_month2)
             self.filterNeg = self.models.objects.filter(
                 author=request.user, sentiment="negative", date_posted__month=this_month2)
-            if len(self.filterAll) is not 0:
+            if len(self.filterAll) != 0:
                 self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
                 self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
                 roundPossi = round(self.calPossi)
@@ -245,7 +242,7 @@ class HomeView(LoginRequiredMixin, View):
                 roundNeg = round(self.calNeg)
 
         self.context = {'roundPossi': roundPossi, 'roundNeg': roundNeg, 'month_name': month_name,
-                        'filter': self.filterAll, 'form': self.form, 'post': self.post, 'author': self.author}
+                        'filter': self.filterAll, 'form': self.form, 'post': self.post, 'author': self.author, 'title': "Home | Live Diary"}
 
         return self.render(request)
 
@@ -268,7 +265,7 @@ class CreateView(LoginRequiredMixin, View):
         self.author = self.author_models.objects.filter(
             pk=request.user.pk).first()
         self.context = {'form': self.form,
-                        'post': self.post, 'author': self.author}
+                        'post': self.post, 'author': self.author, 'title': "Create | Live Diary"}
 
         return self.render(request)
 
@@ -337,7 +334,7 @@ class CreateView(LoginRequiredMixin, View):
 
             else:
                 self.form.instance.display_emoji = '😃'
-            if self.score is not '0':
+            if self.score != '0':
 
                 self.form.instance.score = self.score
                 self.form.instance.emoji = emoji
@@ -365,6 +362,7 @@ class CreateView(LoginRequiredMixin, View):
 
 class EditView(LoginRequiredMixin, View):
     models = Post
+    author_models = Author
     success_url = "edit"
     forms = PostForm
     template_name = "app/edit.html"
@@ -374,12 +372,15 @@ class EditView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
         self.post = self.models.objects.get(pk=pk)
+        self.author = self.author_models.objects.filter(
+            pk=request.user.pk).first()
         if self.request.user == self.post.author:
             self.form = self.forms(instance=self.post)
         else:
             messages.info(request, "ของคนอื่นแก้ไม่ได้")
             return self.redirect(request, pk)
-        self.context = {'form': self.form, 'posts': self.post}
+        self.context = {'form': self.form, 'posts': self.post,
+                        'title': "Edit | Life Diary", 'author': self.author, }
         return self.render(request, pk)
 
     def post(self, request, pk, *args, **kwargs):
@@ -444,23 +445,30 @@ class EditView(LoginRequiredMixin, View):
                 self.polarity = (self.response.json()['sentiment']['polarity'])
                 self.score = (self.response.json()['sentiment']['score'])
                 print(type(self.score))
-                if self.score <= "0":
-                    redirect("/test/")
-
                 if self.polarity == "negative":
                     self.form.instance.display_emoji = '😫'
+
                 else:
                     self.form.instance.display_emoji = '😃'
+                if self.score != '0':
 
-                self.form.instance.sentiment = self.polarity
-                self.form.instance.score = self.score
-                self.form.instance.emoji = emoji
-                self.form.instance.sentiment = self.polarity
-                self.form.instance.author = self.request.user
-                self.form.save()
-                print(self.form)
-                messages.success(request, 'เพิ่มสำเร็จ')
-                return redirect(f'/detail/{self.post.pk}/')
+                    self.form.instance.score = self.score
+                    self.form.instance.emoji = emoji
+                    self.form.instance.sentiment = self.polarity
+                    self.form.instance.author = self.request.user
+                    self.form.save()
+                    messages.success(request, 'เพิ่มสำเร็จ')
+                    return redirect(f'/detail/{self.post.pk}/')
+                else:
+                    self.s = 'positive'
+                    self.form.instance.score = self.score
+                    self.form.instance.emoji = emoji
+                    self.form.instance.sentiment = self.s
+                    self.form.instance.author = self.request.user
+                    self.form.save()
+                    messages.success(request, 'เพิ่มสำเร็จ')
+
+                    return redirect(f'/detail/{self.post.pk}/')
 
             else:
                 self.form = self.form(instance=self.request.user)
@@ -490,6 +498,7 @@ class DeleteView(LoginRequiredMixin, View):
 
 class DetailView(LoginRequiredMixin, View):
     models = Post
+    author_models = Author
     template_name = 'app/detail.html'
 
     def render(self, request, pk, *args, **kwargs):
@@ -498,8 +507,10 @@ class DetailView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         self.post = self.models.objects.filter(
             author=request.user, pk=pk).first()
+        self.author = self.author_models.objects.filter(
+            pk=request.user.pk).first()
         print(self.post)
-        self.context = {'post': self.post}
+        self.context = {'post': self.post, 'author': self.author, 'title': "Detail | Life Diary"}
         return self.render(request, pk)
 
 
@@ -537,7 +548,8 @@ class TotalView(LoginRequiredMixin, View):
                 author=request.user, date_posted__month=getmonth)
             # print(filterM)
             self.context = {'filter': filterM,
-                            'post': self.post, 'author': self.author}
+                            'post': self.post, 'author': self.author
+                            , 'title': "All Diary | Life Diary"}
 
             return self.render(request)
         else:
@@ -555,7 +567,7 @@ class TotalView(LoginRequiredMixin, View):
 
             self.context = {
                 'post': self.post, 'author': self.author
-            }
+                , 'title': "All Diary | Life Diary"}
 
             return self.render(request)
 

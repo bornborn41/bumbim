@@ -20425,10 +20425,7 @@ textarea[resize='horizontal']
 {
     font-size: 3.25rem;
 }
-.icon-lg + .icon-text
-{
-    width: calc(100% - $icon-size-lg - 1);
-}
+
 
 .icon-sm
 {
@@ -20440,10 +20437,6 @@ textarea[resize='horizontal']
 {
     font-size: 1.25rem;
 }
-.icon-sm + .icon-text
-{
-    width: calc(100% - $icon-size-sm - 1);
-}
 
 .icon-xs
 {
@@ -20454,10 +20447,6 @@ textarea[resize='horizontal']
 .icon-xs svg
 {
     font-size: .5rem;
-}
-.icon-xs + .icon-text
-{
-    width: calc(100% - $icon-size-xs - 1);
 }
 
 .icon-shape
@@ -26163,8 +26152,7 @@ table.dataTable tbody > tr.selected
 .dataTables_filter
 {
     display: inline-block;
-    float: right; 
-
+    /* float: right;  */
     padding-right: 1.5rem;
 }
 

@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
   <meta name="author" content="Creative Tim">
-  <title>Argon Dashboard - Free Dashboard for Bootstrap 4</title>
+ <title>{{title}}</title>
   <!-- Favicon -->
   <link rel="icon" href="{% static 'assets/img/brand/favicon.png' %}" type="image/png">
   <!-- Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
   <!-- Icons -->
   <link rel="stylesheet" href="{% static 'assets/vendor/nucleo/css/nucleo.css' %}" type="text/css">
-  <link rel="stylesheet" href="{% static 'assets/vendor/@fortawesome/fontawesome-free/css/all.min.css ' %}" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="{% static 'assets/vendor/@fortawesome/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
   <!-- Argon CSS -->
-  <link rel="stylesheet" href="{% static 'assets/css/argon.css ' %}" type="text/css">
+  <link rel="stylesheet" href="{% static 'assets/css/argon.css' %}" type="text/css">
 </head>
 
 <body class="bg-default">
@@ -91,36 +91,3 @@
 </body>
 
 </html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-{% comment %} <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Register - Life Dairy</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-    <h1>Register</h1>
-    
-       <div class="container">
-       <div class="center">
-
-    <form enctype="multipart/form-data" method="POST">
-                 {% csrf_token %}
-            {{form|crispy}}
-            <br>
-            <div class="modal-footer">
-        
-        <button  type="submit"  class="btn btn-danger btn-lg btn-block rounded-pill" >Register</button>
-      </div>
-        </form> 
-       </div>
-       </div>
-        <script src="" async defer></script>
-    </body>
-</html> {% endcomment %}
