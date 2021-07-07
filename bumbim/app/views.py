@@ -185,27 +185,34 @@ class HomeView(LoginRequiredMixin, View):
             self.filterNeg = self.models.objects.filter(
                 author=request.user, sentiment="negative", date_posted__month=getmonth)
             print(len(self.filterPossi), len(self.filterNeg))
-            if len(self.filterPossi) > 0 and len(self.filterNeg) > 0:
+            if len(self.filter) is not 0:
+                if len(self.filterPossi) > 0 and len(self.filterNeg) > 0:
 
-                self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
-                self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
-                roundPossi = round(self.calPossi)
-                roundNeg = round(self.calNeg)
-            elif len(self.filterNeg) == 0 and len(self.filterPossi) > 0:
-                self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
-                self.calNeg = 0
-                roundPossi = round(self.calPossi)
-                roundNeg = round(self.calNeg)
-            elif len(self.filterPossi) == 0 and len(self.filterNeg) > 0:
-                self.calPossi = 0
-                self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
-                roundPossi = round(self.calPossi)
-                roundNeg = round(self.calNeg)
+                    self.calPossi = (len(self.filterPossi) *
+                                     100)/len(self.filterAll)
+                    self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
+                    roundPossi = round(self.calPossi)
+                    roundNeg = round(self.calNeg)
+                elif len(self.filterNeg) == 0 and len(self.filterPossi) > 0:
+                    self.calPossi = (len(self.filterPossi) *
+                                     100)/len(self.filterAll)
+                    self.calNeg = 0
+                    roundPossi = round(self.calPossi)
+                    roundNeg = round(self.calNeg)
+                elif len(self.filterPossi) == 0 and len(self.filterNeg) > 0:
+                    self.calPossi = 0
+                    self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
+                    roundPossi = round(self.calPossi)
+                    roundNeg = round(self.calNeg)
+                else:
+                    self.calPossi = 0
+                    self.calNeg = 0
+                    roundPossi = round(self.calPossi)
+                    roundNeg = round(self.calNeg)
             else:
-                self.calPossi = 0
-                self.calNeg = 0
-                roundPossi = round(self.calPossi)
-                roundNeg = round(self.calNeg)
+                self.filterAll = []
+                self.filterPossi = []
+                self.filterNeg = []
 
         else:
             tz = pytz.timezone('Asia/Bangkok')
@@ -226,10 +233,16 @@ class HomeView(LoginRequiredMixin, View):
                 author=request.user, sentiment="positive", date_posted__month=this_month2)
             self.filterNeg = self.models.objects.filter(
                 author=request.user, sentiment="negative", date_posted__month=this_month2)
-            self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
-            self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
-            roundPossi = round(self.calPossi)
-            roundNeg = round(self.calNeg)
+            if len(self.filterAll) is not 0:
+                self.calPossi = (len(self.filterPossi)*100)/len(self.filterAll)
+                self.calNeg = (len(self.filterNeg)*100)/len(self.filterAll)
+                roundPossi = round(self.calPossi)
+                roundNeg = round(self.calNeg)
+            else:
+                self.calPossi = 0
+                self.calNeg = 0
+                roundPossi = round(self.calPossi)
+                roundNeg = round(self.calNeg)
 
         self.context = {'roundPossi': roundPossi, 'roundNeg': roundNeg, 'month_name': month_name,
                         'filter': self.filterAll, 'form': self.form, 'post': self.post, 'author': self.author}
@@ -317,26 +330,34 @@ class CreateView(LoginRequiredMixin, View):
             self.response = requests.post(url, data=data, headers=headers)
             self.polarity = (self.response.json()['sentiment']['polarity'])
             self.score = (self.response.json()['sentiment']['score'])
-            print(type(self.score))
-            if self.score <= "0":
-                redirect("/test/")
+            print(self.score)
 
             if self.polarity == "negative":
                 self.form.instance.display_emoji = '😫'
+
             else:
                 self.form.instance.display_emoji = '😃'
-            self.form.instance.sentiment = self.polarity
-            self.form.instance.score = self.score
-            self.form.instance.emoji = emoji
-            self.form.instance.sentiment = self.polarity
-            self.form.instance.author = self.request.user
-            self.form.save()
-            messages.success(request, 'เพิ่มสำเร็จ')
-            return redirect(self.success_url)
+            if self.score is not '0':
+
+                self.form.instance.score = self.score
+                self.form.instance.emoji = emoji
+                self.form.instance.sentiment = self.polarity
+                self.form.instance.author = self.request.user
+                self.form.save()
+                messages.success(request, 'เพิ่มสำเร็จ')
+                return redirect(self.success_url)
+            else:
+                self.s = 'positive'
+                self.form.instance.score = self.score
+                self.form.instance.emoji = emoji
+                self.form.instance.sentiment = self.s
+                self.form.instance.author = self.request.user
+                self.form.save()
+                messages.success(request, 'เพิ่มสำเร็จ')
+                return redirect(self.success_url)
 
         else:
-            if self.score <= 0:
-                redirect("/test/")
+
             self.form = self.form(instance=self.request.user)
         self.context = {'form': self.form}
         return self.render(request)
