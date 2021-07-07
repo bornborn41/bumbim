@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('djrichtextfield/', include('djrichtextfield.urls')),
     # app
-    path('', views.HomeView.as_view(), name='home'),
+    path('', views.HomeView.as_view(), name='login'),
     path('edit/<int:pk>/', views.EditView.as_view(), name='edit'),
     path('delete/<int:pk>/', views.DeleteView.as_view(), name='delete'),
     path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),

@@ -68,8 +68,11 @@ class LoginView(View):
     def get(self, request, *args, **kwargs):
 
         self.form = self.form(initial=self.initial)
+        if request.user.is_authenticated:
+            return redirect('/')
         self.context = {'form': self.form, 'title': "Login | Live Diary"}
         return self.render(request)
+        
 
     def post(self, request, *args, **kwargs):
         self.form = self.form(request.POST)
@@ -150,7 +153,7 @@ class EditProfileView(LoginRequiredMixin, View):
         return self.render(request, username)
 
 
-class HomeView(LoginRequiredMixin, View):
+class HomeView(View):
     models = Post
     author_models = Author
     form = PostForm
@@ -162,9 +165,10 @@ class HomeView(LoginRequiredMixin, View):
         return render(request, self.template_name, self.context)
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_anonymous:
-            return redirect('login')
-
+        
+        if not request.user.is_authenticated:
+            return redirect('/login/')
+        
         if request.GET.get('month'):
 
             getmonth = request.GET.get('month')
