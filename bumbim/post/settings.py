@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'app',
     'crispy_forms',
     'djrichtextfield',
+    'django_dbml',
 ]
 
 MIDDLEWARE = [

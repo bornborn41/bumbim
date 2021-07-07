@@ -11,6 +11,7 @@ django-richtextfield = "*"
 requests ="*"
 html2text = "*"
 bs4 = "*"
+django-dbml = "*"
 
 [dev-packages]
 
